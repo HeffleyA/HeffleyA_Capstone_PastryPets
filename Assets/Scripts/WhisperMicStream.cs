@@ -108,6 +108,7 @@ public class WhisperMicStream : MonoBehaviour
         {
             var text = await whisperManager.GetTextAsync(micClip);
             Debug.Log($"Transcribed Text: {text}");
+            Debug.Log(text.ToString());
         }
         catch (System.Exception ex)
         {
