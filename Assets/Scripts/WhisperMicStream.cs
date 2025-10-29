@@ -1,7 +1,6 @@
-using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,23 +8,22 @@ using Whisper;
 
 public class WhisperMicStream : MonoBehaviour
 {
+    [SerializeField]
+    public BattleManager battleManager;
+
+    System.Random random = new System.Random();
+
     [Header("References")]
     public WhisperManager whisperManager;
 
     [Header("Mic Settings")]
     public string micDevice;
     public int sampleRate = 16000;
-    public int bufferLengthSec = 10;
-    public int chunkSize = 16000; // 1 second chunks
+    public int recordDurationSec = 2;
 
-    private AudioClip micClip;
-    private float[] sampleBuffer;
-    private int lastSamplePos = 0;
-
-    private List<float> pendingSamples = new List<float>();
     private bool isRecording = false;
+    private AudioClip micClip;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (Microphone.devices.Length == 0)
@@ -38,81 +36,79 @@ public class WhisperMicStream : MonoBehaviour
         Debug.Log($"Using microphone: {micDevice}");
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            Debug.Log("SPACE pressed!");
-            if (!isRecording) StartCoroutine(StreamMic());
-            else StopMic();
+            if (!isRecording)
+                StartCoroutine(RecordAndTranscribe());
         }
     }
 
-    IEnumerator StreamMic()
+    IEnumerator RecordAndTranscribe()
     {
         isRecording = true;
-        micClip = Microphone.Start(micDevice, true, bufferLengthSec, sampleRate);
-        sampleBuffer = new float[micClip.samples * micClip.channels];
-        Debug.Log("Microphone started.");
+        Debug.Log("Starting 2-second recording...");
 
-        while (isRecording)
-        {
-            int currentPos = Microphone.GetPosition(micDevice);
-            micClip.GetData(sampleBuffer, 0);
+        // Start recording for 2 seconds
+        micClip = Microphone.Start(micDevice, false, recordDurationSec, sampleRate);
 
-            if (currentPos < lastSamplePos)
-            {
-                //Looping case
-                AddSamples(sampleBuffer, lastSamplePos, sampleBuffer.Length - lastSamplePos);
-                AddSamples(sampleBuffer, 0, currentPos);
-            }
-            else
-            {
-                AddSamples(sampleBuffer, lastSamplePos, currentPos - lastSamplePos);
-            }
+        // Wait until recording finishes
+        yield return new WaitForSeconds(recordDurationSec);
 
-            lastSamplePos = currentPos;
-
-            //Process chunks
-            while (pendingSamples.Count >= chunkSize)
-            {
-                float[] chunk = pendingSamples.GetRange(0, chunkSize).ToArray();
-                pendingSamples.RemoveRange(0, chunkSize);
-                _ = ProcessAudioChunk(chunk);
-            }
-
-            yield return null;
-        }
-    }
-
-    void StopMic()
-    {
-        isRecording = false;
+        // Stop the mic and transcribe
         Microphone.End(micDevice);
-        Debug.Log("Microphone stopped.");
+        Debug.Log("Recording complete. Transcribing...");
+
+        yield return TranscribeClip(micClip);
+
+        isRecording = false;
+
     }
 
-    void AddSamples(float[] src, int start, int length)
+
+    private async Task TranscribeClip(AudioClip clip)
     {
-        if (length <= 0) return;
-        for (int i = 0; i < length; i++)
+        Debug.Log("Recording complete. Transcribing...");
+
+        //Debug.Log("Before TextAsync");
+        var result = await whisperManager.GetTextAsync(clip);
+        //Debug.Log("After TextAsync");
+        if (result == null)
         {
-            pendingSamples.Add(src[start + i]);
+            Debug.LogWarning("[DEBUG] Transcription result was null.");
+            return;
+        }
+
+        // Combine all segment texts into one string
+        string finalText = string.Join(" ", result.Segments.Select(s => s.Text));
+        Debug.Log($"Transcribed Text: {finalText}");
+
+        // Clean the text for easier matching
+        string cleanedText = new string(finalText
+            .Where(c => !char.IsPunctuation(c) && !char.IsWhiteSpace(c))
+            .ToArray())
+            .ToLower();
+
+        Debug.Log($"[DEBUG] Cleaned text: {cleanedText}");
+
+        switch (cleanedText)
+        {
+            case "attack":
+                battleManager.ownedPet.isAttacking = true;
+                battleManager.OnTakeTurn();
+                return;
+            case "defend":
+                battleManager.ownedPet.isDefending = true;
+                battleManager.OnTakeTurn();
+                return;
+            case "dodge":
+                battleManager.ownedPet.isDodging = true;
+                battleManager.OnTakeTurn();
+                return;
+            default:
+                return;
         }
     }
 
-    async Task ProcessAudioChunk(float[] chunk)
-    {
-        try
-        {
-            var text = await whisperManager.GetTextAsync(micClip);
-            Debug.Log($"Transcribed Text: {text}");
-            Debug.Log(text.ToString());
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Error processing audio chunk: {ex.Message}");
-        }
-    }
 }

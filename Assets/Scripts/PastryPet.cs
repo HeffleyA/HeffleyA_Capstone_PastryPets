@@ -6,7 +6,10 @@ public class PastryPet : MonoBehaviour
 {
     System.Random random = new System.Random();
 
-    enum Species
+    [SerializeField]
+    public Sprite sprite;
+
+    public enum Species
     {
         Cookiedile,
         Bonbonny,
@@ -16,7 +19,7 @@ public class PastryPet : MonoBehaviour
         Default
     }
 
-    enum Type
+    public enum Type
     {
         Basic,
         Pyro,
@@ -32,28 +35,36 @@ public class PastryPet : MonoBehaviour
     }
 
     private string name;
-    private Species species = Species.Default;
-    private Type type = Type.Basic;
-    private Type weakTo = Type.Basic;
+    public Species species = Species.Default;
+    public Type type = Type.Basic;
+    public Type weakTo = Type.Basic;
     private float health;
     private float attack;
     private float defense;
     private float speed;
+    private float exp;
+    private float expToLvl;
+    public float damageToTake = 0;
     private int level;
 
+    public bool isAttacking;
+    public bool isDefending;
+    public bool isDodging;
+    public string Name;
     public float Health;
     public float Attack;
     public float Defense;
     public float Speed;
-
-    private bool critHit = false;
+    public int Level;
 
     private PastryPet()
     {
-        Health = health;
-        Attack = attack;
-        Defense = defense;
-        Speed = speed;
+        name = Name;
+        health = Health;
+        attack = Attack;
+        defense = Defense;
+        speed = Speed;
+        level = Level;
     }
 
     void OnLevelUp()
@@ -64,32 +75,70 @@ public class PastryPet : MonoBehaviour
         attack = (float)(attack + ((attack * 0.1)) / 2);
         defense = (float)(defense + ((defense * 0.1)) / 2);
         speed = (float)(speed + ((speed * 0.1)) / 2);
+
+        expToLvl = level * random.Next(3, 5);
     }
 
-    public void TakeDamage(PastryPet opp)
+    public void OnGainExp(PastryPet opp)
     {
-        float damage = 0;
-        float critChance = (float)(random.Next(0, 10));
+        exp += (float)(opp.Level * 2);
+
+        float remainingExp = expToLvl - exp;
+
+        if (remainingExp <= 0)
+        {
+            OnLevelUp();
+            exp = remainingExp * -1;
+        }
+    }
+
+    public void CalculateDamage(PastryPet opp)
+    {
+        damageToTake += opp.Attack * 0.1f;
 
         if (opp.type == weakTo)
         {
-            damage += (float)((opp.attack * 0.1) * 1.5);
-        }
-        else
-        {
-            damage += (float)(opp.attack * 0.1);
+            damageToTake *= 1.5f;
+            Debug.Log($"{Name} attacked with a super effective hit!");
         }
 
-        if (critChance == 5)
+        if (random.Next(16) == 5)
         {
-            damage += (float)(damage * 1.5);
-            critHit = true;
+            damageToTake *= 1.5f;
+            Debug.Log($"{Name} attacked with a critical hit!");
         }
-
-        health -= damage;
     }
 
-    void AssignBaseStats()
+    public void OnAttack(PastryPet opp)
+    {
+        opp.CalculateDamage(this);
+    }
+
+    public void OnDefend()
+    {
+        damageToTake /= 2.0f;
+    }
+
+    public void OnDodge()
+    {
+        if (random.Next(11) == 5)
+        {
+            damageToTake = 0.0f;
+            Debug.Log($"{Name} dodged the attack!");
+        }
+    }
+
+    public void OnTakeDamage()
+    {
+        Health -= damageToTake;
+    }
+
+    public void OnKnockedOut()
+    {
+
+    }
+
+    public void AssignBaseStats()
     {
         switch (type)
         {

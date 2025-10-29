@@ -2,40 +2,46 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    private int turn = 0;
-    private PastryPet first = null;
-    private PastryPet second = null;
+    [SerializeField]
+    public PastryPet enemyPet;
 
-    void TakeTurn(PastryPet pet, PastryPet opp)
+    [SerializeField]
+    public PastryPet ownedPet;
+
+    public void OnTakeTurn()
     {
-        if (pet.Speed >= opp.Speed)
+        if (ownedPet.Speed >= enemyPet.Speed && ownedPet.isAttacking)
         {
-            first = pet;
-            second = opp;
-        }
-        else
-        {
-            first = opp;
-            second = pet;
+            ownedPet.OnAttack(enemyPet);
+            ownedPet.isAttacking = false;
         }
 
-        do
+        enemyPet.OnAttack(ownedPet);
+
+        if (ownedPet.isAttacking)
         {
-            if (turn % 2 == 0)
-            {
-                second.TakeDamage(first);
-            }
-            else
-            {
-                first.TakeDamage(second);
-            }
+            ownedPet.OnAttack(enemyPet);
+            ownedPet.isAttacking = false;
         }
-        while (first.Health > 0 || second.Health > 0);
 
-    }
+        if (ownedPet.isDefending)
+        {
+            ownedPet.OnDefend();
+            ownedPet.isDefending = false;
+        }
 
-    void OnBattleWin(PastryPet pet)
-    {
-        
+        if (ownedPet.isDodging)
+        {
+            ownedPet.OnDodge();
+            ownedPet.isDodging = false;
+        }
+
+        ownedPet.OnTakeDamage();
+        enemyPet.OnTakeDamage();
+
+        Debug.Log($"{ownedPet.Name} took {ownedPet.damageToTake} damage and has {ownedPet.Health} health remaining!");
+        Debug.Log($"{enemyPet.Name} took {enemyPet.damageToTake} damage and has {enemyPet.Health} health remaining!");
+        ownedPet.damageToTake = 0;
+        enemyPet.damageToTake = 0;
     }
 }
