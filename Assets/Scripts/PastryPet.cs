@@ -1,13 +1,10 @@
-
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class PastryPet : MonoBehaviour
 {
     System.Random random = new System.Random();
-
-    [SerializeField]
-    public Sprite sprite;
 
     public enum Species
     {
@@ -35,53 +32,58 @@ public class PastryPet : MonoBehaviour
     }
 
     private string name;
-    public Species species = Species.Default;
-    public Type type = Type.Basic;
-    public Type weakTo = Type.Basic;
-    private float health;
-    private float attack;
-    private float defense;
-    private float speed;
-    private float exp;
-    private float expToLvl;
-    public float damageToTake = 0;
+    private Species species = Species.Default;
+    private Type type = Type.Basic;
+    private Type weakTo = Type.Basic;
+    private int health;
+    private int attack;
+    private int defense;
+    private int speed;
     private int level;
 
-    public bool isAttacking;
-    public bool isDefending;
-    public bool isDodging;
-    public string Name;
-    public float Health;
-    public float Attack;
-    public float Defense;
-    public float Speed;
-    public int Level;
+    private float exp;
+    private float expToLvl;
+    public int damageToTake = 0;
 
-    private PastryPet()
-    {
-        name = Name;
-        health = Health;
-        attack = Attack;
-        defense = Defense;
-        speed = Speed;
-        level = Level;
-    }
+    public bool isAttacking = false;
+    public bool isDefending = false;
+    public bool isDodging = false;
+    public bool hitCritical;
+    public bool hitSuperEffective;
+    public bool hasDodged = false;
+    public bool hasDefended = false;
+
+    public string GetName() { return name; }
+    public Species GetSpecies() { return species; }
+    public Type GetType() { return type; }
+    public Type GetWeakTo() { return weakTo; }
+    public int GetHealth() { return health; }
+    public int GetAttack() { return attack; }
+    public int GetDefense() { return defense; }
+    public int GetSpeed() { return speed; }
+    public int GetLevel() { return level; }
+
+    public void SetName(string value) { name = value; }
+    public void SetSpecies (Species value) { species = value; }
+    public void SetType(Type value) { type = value; }
+    public void SetHealth(int value) { health = value; }
+    public void SetLevel(int value) { level = value; }
 
     void OnLevelUp()
     {
         level++;
 
-        health = (float)(health + ((health * 0.1)) / 2);
-        attack = (float)(attack + ((attack * 0.1)) / 2);
-        defense = (float)(defense + ((defense * 0.1)) / 2);
-        speed = (float)(speed + ((speed * 0.1)) / 2);
+        health = (int)(health + ((health * 0.1)) / 2);
+        attack = (int)(attack + ((attack * 0.1)) / 2);
+        defense = (int)(defense + ((defense * 0.1)) / 2);
+        speed = (int)(speed + ((speed * 0.1)) / 2);
 
         expToLvl = level * random.Next(3, 5);
     }
 
     public void OnGainExp(PastryPet opp)
     {
-        exp += (float)(opp.Level * 2);
+        exp += (float)(opp.GetLevel() * 2);
 
         float remainingExp = expToLvl - exp;
 
@@ -94,19 +96,20 @@ public class PastryPet : MonoBehaviour
 
     public void CalculateDamage(PastryPet opp)
     {
-        damageToTake += opp.Attack * 0.1f;
+        damageToTake += (int)(opp.GetAttack() * 0.1);
 
-        if (opp.type == weakTo)
+        if (opp.weakTo == type)
         {
-            damageToTake *= 1.5f;
-            Debug.Log($"{Name} attacked with a super effective hit!");
+            damageToTake *= (int)1.5;
+            hitSuperEffective = true;
         }
 
         if (random.Next(16) == 5)
         {
-            damageToTake *= 1.5f;
-            Debug.Log($"{Name} attacked with a critical hit!");
+            damageToTake *= (int)1.5;
+            hitCritical = true;
         }
+            Debug.Log($"hitSuperEffective is {hitSuperEffective} in CalculateDamage");
     }
 
     public void OnAttack(PastryPet opp)
@@ -116,21 +119,28 @@ public class PastryPet : MonoBehaviour
 
     public void OnDefend()
     {
-        damageToTake /= 2.0f;
+        damageToTake = damageToTake / 2;
+        isDefending = false;
     }
 
     public void OnDodge()
     {
         if (random.Next(11) == 5)
         {
-            damageToTake = 0.0f;
-            Debug.Log($"{Name} dodged the attack!");
+            damageToTake = 0;
+            hasDodged = true;
         }
+        else
+        {
+            hasDodged = false;
+        }
+
+        isDodging = false;
     }
 
     public void OnTakeDamage()
     {
-        Health -= damageToTake;
+        SetHealth(GetHealth() - damageToTake);
     }
 
     public void OnKnockedOut()
@@ -138,7 +148,7 @@ public class PastryPet : MonoBehaviour
 
     }
 
-    public void AssignBaseStats()
+    public void AssignWeakTo()
     {
         switch (type)
         {
@@ -173,7 +183,10 @@ public class PastryPet : MonoBehaviour
                 weakTo = Type.Basic;
                 return;
         }
+    }
 
+    public void AssignBaseStats()
+    {
         switch (species)
         {
             case Species.Cookiedile:

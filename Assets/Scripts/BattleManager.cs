@@ -1,47 +1,153 @@
+using System.Collections;
+using System.Timers;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
     [SerializeField]
     public PastryPet enemyPet;
-
     [SerializeField]
     public PastryPet ownedPet;
+    [SerializeField]
+    public Slider petSlider;
+    [SerializeField]
+    public Slider enemySlider;
+    [SerializeField]
+    public TextMeshPro battleText;
 
-    public void OnTakeTurn()
+    private float textChangeTimer = 0.0f;
+    private bool timerHasStarted = false;
+
+    private IEnumerator ChangeBattleText()
     {
-        if (ownedPet.Speed >= enemyPet.Speed && ownedPet.isAttacking)
-        {
-            ownedPet.OnAttack(enemyPet);
-            ownedPet.isAttacking = false;
-        }
+        yield return new WaitForSeconds(5.0f);
+    }
 
-        enemyPet.OnAttack(ownedPet);
-
+    public IEnumerator RunTurn()
+    {
         if (ownedPet.isAttacking)
         {
-            ownedPet.OnAttack(enemyPet);
+            if (ownedPet.GetSpeed() >= enemyPet.GetSpeed())
+            {
+                ownedPet.OnAttack(enemyPet);
+                enemyPet.OnTakeDamage();
+                if (CheckSuperEffective(ownedPet)) yield return new WaitForSeconds(2f);
+                if (CheckCriticalHit(ownedPet)) yield return new WaitForSeconds(2f);
+                battleText.text = $"{enemyPet.GetName()} took {enemyPet.damageToTake} damage!";
+
+                yield return new WaitForSeconds(2f);
+
+                enemyPet.OnAttack(ownedPet);
+                ownedPet.OnTakeDamage();
+                if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
+                if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
+            }
+            else
+            {
+                enemyPet.OnAttack(ownedPet);
+                ownedPet.OnTakeDamage();
+                if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
+                if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
+
+                yield return new WaitForSeconds(2f);
+
+                ownedPet.OnAttack(enemyPet);
+                enemyPet.OnTakeDamage();
+                if (CheckSuperEffective(ownedPet)) yield return new WaitForSeconds(2f);
+                if (CheckCriticalHit(ownedPet)) yield return new WaitForSeconds(2f);
+                battleText.text = $"{enemyPet.GetName()} took {enemyPet.damageToTake} damage!";
+            }
+
             ownedPet.isAttacking = false;
         }
-
-        if (ownedPet.isDefending)
+        else
         {
-            ownedPet.OnDefend();
-            ownedPet.isDefending = false;
+            enemyPet.OnAttack(ownedPet);
+
+            if (ownedPet.isDodging)
+            {
+                ownedPet.OnDodge();
+
+                if (ownedPet.hasDodged)
+                {
+                    battleText.text = $"{ownedPet.GetName()} has successfully dodged the attack!";
+                    ownedPet.hasDodged = false;
+                }
+                else
+                {
+                    ownedPet.OnTakeDamage();
+                    if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
+                    if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                    battleText.text = $"{ownedPet.GetName()} failed to dodge the attack and took {ownedPet.damageToTake} damage!";
+                }
+            }
+            else if (ownedPet.isDefending)
+            {
+                ownedPet.OnDefend();
+                ownedPet.OnTakeDamage();
+                if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
+                if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
+            }
+
         }
 
-        if (ownedPet.isDodging)
-        {
-            ownedPet.OnDodge();
-            ownedPet.isDodging = false;
-        }
-
-        ownedPet.OnTakeDamage();
-        enemyPet.OnTakeDamage();
-
-        Debug.Log($"{ownedPet.Name} took {ownedPet.damageToTake} damage and has {ownedPet.Health} health remaining!");
-        Debug.Log($"{enemyPet.Name} took {enemyPet.damageToTake} damage and has {enemyPet.Health} health remaining!");
         ownedPet.damageToTake = 0;
         enemyPet.damageToTake = 0;
+    }
+
+    private bool CheckSuperEffective(PastryPet pet)
+    {
+        if (pet.hitSuperEffective)
+        {
+            battleText.text = $"{pet.GetName()} landed a super effective hit!";
+            pet.hitSuperEffective = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool CheckCriticalHit(PastryPet pet)
+    {
+        if (pet.hitCritical)
+        {
+            battleText.text = $"{pet.GetName()} landed a critical hit!";
+            pet.hitCritical = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Start()
+    {
+        ownedPet.SetName("Puppuff");
+        ownedPet.SetSpecies(PastryPet.Species.Puppuff);
+        ownedPet.SetType(PastryPet.Type.Gaia);
+        ownedPet.SetLevel(5);
+
+        enemyPet.SetName("Cookiedile");
+        enemyPet.SetSpecies(PastryPet.Species.Cookiedile);
+        enemyPet.SetType(PastryPet.Type.Pyro);
+        enemyPet.SetLevel(5);
+
+        ownedPet.AssignWeakTo();
+        ownedPet.AssignBaseStats();
+        enemyPet.AssignWeakTo();
+        enemyPet.AssignBaseStats();
+
+        petSlider.maxValue = ownedPet.GetHealth();
+        enemySlider.maxValue = enemyPet.GetHealth();
+    }
+
+    public void Update()
+    {
+        petSlider.value = ownedPet.GetHealth();
+        enemySlider.value = enemyPet.GetHealth();
     }
 }

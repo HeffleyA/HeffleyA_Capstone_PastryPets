@@ -96,19 +96,21 @@ public class WhisperMicStream : MonoBehaviour
         {
             case "attack":
                 battleManager.ownedPet.isAttacking = true;
-                battleManager.OnTakeTurn();
+                StartCoroutine(battleManager.RunTurn());
                 return;
             case "defend":
                 battleManager.ownedPet.isDefending = true;
-                battleManager.OnTakeTurn();
+                StartCoroutine(battleManager.RunTurn());
                 return;
             case "dodge":
                 battleManager.ownedPet.isDodging = true;
-                battleManager.OnTakeTurn();
+                StartCoroutine(battleManager.RunTurn());
                 return;
             default:
                 return;
         }
+
+
     }
 
 }
