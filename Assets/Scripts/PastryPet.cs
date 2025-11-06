@@ -94,53 +94,45 @@ public class PastryPet : MonoBehaviour
         }
     }
 
-    public void CalculateDamage(PastryPet opp)
+    public void OnGetAttacked(PastryPet opp)
     {
         damageToTake += (int)(opp.GetAttack() * 0.1);
 
-        if (opp.weakTo == type)
+        if (opp.type == this.weakTo)
         {
             damageToTake *= (int)1.5;
-            hitSuperEffective = true;
+            opp.hitSuperEffective = true;
         }
 
         if (random.Next(16) == 5)
         {
             damageToTake *= (int)1.5;
-            hitCritical = true;
+            opp.hitCritical = true;
         }
-            Debug.Log($"hitSuperEffective is {hitSuperEffective} in CalculateDamage");
-    }
-
-    public void OnAttack(PastryPet opp)
-    {
-        opp.CalculateDamage(this);
-    }
-
-    public void OnDefend()
-    {
-        damageToTake = damageToTake / 2;
-        isDefending = false;
-    }
-
-    public void OnDodge()
-    {
-        if (random.Next(11) == 5)
+        
+        if (this.isDefending)
         {
-            damageToTake = 0;
-            hasDodged = true;
+            damageToTake = damageToTake / 2;
+            hasDefended = true;
+            isDefending = false;
         }
-        else
+
+        if (this.isDodging)
         {
-            hasDodged = false;
+            if (random.Next(11) == 5)
+            {
+                damageToTake = 0;
+                hasDodged = true;
+            }
+            else
+            {
+                hasDodged = false;
+            }
+
+            isDodging = false;
         }
 
-        isDodging = false;
-    }
-
-    public void OnTakeDamage()
-    {
-        SetHealth(GetHealth() - damageToTake);
+        this.SetHealth(GetHealth() - damageToTake);
     }
 
     public void OnKnockedOut()
