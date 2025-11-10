@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Timers;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -17,6 +19,12 @@ public class BattleManager : MonoBehaviour
     public Slider enemySlider;
     [SerializeField]
     public TextMeshPro battleText;
+    [SerializeField]
+    public AudioSource battleImpact;
+    [SerializeField]
+    public AudioResource normalBI;
+    [SerializeField]
+    public AudioResource superBI;
 
     public IEnumerator RunTurn()
     {
@@ -85,13 +93,19 @@ public class BattleManager : MonoBehaviour
 
     private bool CheckSuperEffective(PastryPet pet)
     {
+        Debug.Log($"{pet.GetName()}.hitSuperEffective is {pet.hitSuperEffective}");
+
         if (pet.hitSuperEffective)
         {
             battleText.text = $"{pet.GetName()} landed a super effective hit!";
             pet.hitSuperEffective = false;
+            battleImpact.resource = superBI;
+            battleImpact.Play();
             return true;
         }
 
+        battleImpact.resource = normalBI;
+        battleImpact.Play();
         return false;
     }
 
