@@ -22,9 +22,14 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     public AudioSource battleImpact;
     [SerializeField]
+    public AudioSource music;
+    [SerializeField]
     public AudioResource normalBI;
     [SerializeField]
     public AudioResource superBI;
+
+    private GameObject teamObject;
+    private PastryPetTeam team;
 
     public IEnumerator RunTurn()
     {
@@ -121,25 +126,34 @@ public class BattleManager : MonoBehaviour
         return false;
     }
 
-    public void Start()
+    private void Awake()
     {
-        ownedPet.SetName("Puppuff");
-        ownedPet.SetSpecies(PastryPet.Species.Puppuff);
-        ownedPet.SetType(PastryPet.Type.Gaia);
-        ownedPet.SetLevel(5);
+        music.Play();
+
+        teamObject = new GameObject("PastryPetTeam");
+        team = teamObject.AddComponent<PastryPetTeam>();
+        team.LoadMembers();
+
+        if (team.GetMember1 != null)
+        {
+            ownedPet = team.GetMember1;
+        }
 
         enemyPet.SetName("Cookiedile");
         enemyPet.SetSpecies(PastryPet.Species.Cookiedile);
         enemyPet.SetType(PastryPet.Type.Pyro);
         enemyPet.SetLevel(5);
 
-        ownedPet.AssignWeakTo();
-        ownedPet.AssignBaseStats();
         enemyPet.AssignWeakTo();
         enemyPet.AssignBaseStats();
 
         petSlider.maxValue = ownedPet.GetHealth();
         enemySlider.maxValue = enemyPet.GetHealth();
+    }
+
+    public void Start()
+    {
+
     }
 
     public void Update()
