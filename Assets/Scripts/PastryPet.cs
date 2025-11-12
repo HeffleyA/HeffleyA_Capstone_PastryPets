@@ -66,7 +66,11 @@ public class PastryPet : MonoBehaviour
     public void SetName(string value) { name = value; }
     public void SetSpecies (Species value) { species = value; }
     public void SetType(Type value) { type = value; }
+    public void SetWeakTo(Type value) { weakTo = value; }
     public void SetHealth(int value) { health = value; }
+    public void SetAttack(int value) { attack = value; }
+    public void SetDefense(int value) { defense = value; }
+    public void SetSpeed(int value) { speed = value; }
     public void SetLevel(int value) { level = value; }
 
     void OnLevelUp()
