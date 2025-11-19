@@ -3,6 +3,7 @@ Puppuff
 Gaia
 Pyro
 55
+49
 60
 55
 55
@@ -12,6 +13,7 @@ Bonbonny
 Aqua
 Gaia
 45
+32
 50
 45
 60

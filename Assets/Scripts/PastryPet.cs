@@ -35,6 +35,7 @@ public class PastryPet : MonoBehaviour
     private Species species = Species.Default;
     private Type type = Type.Basic;
     private Type weakTo = Type.Basic;
+    private int maxHealth;
     private int health;
     private int attack;
     private int defense;
@@ -44,6 +45,9 @@ public class PastryPet : MonoBehaviour
     private float exp;
     private float expToLvl;
     public int damageToTake = 0;
+
+    public Sprite[] sprites;
+    public SpriteRenderer spriteRenderer;
 
     public bool isAttacking = false;
     public bool isDefending = false;
@@ -57,16 +61,24 @@ public class PastryPet : MonoBehaviour
     public Species GetSpecies() { return species; }
     public Type GetType() { return type; }
     public Type GetWeakTo() { return weakTo; }
+    public int GetMaxHealth() { return maxHealth; }
     public int GetHealth() { return health; }
     public int GetAttack() { return attack; }
     public int GetDefense() { return defense; }
     public int GetSpeed() { return speed; }
     public int GetLevel() { return level; }
 
+    //public void SetSprite(string spriteName)
+    //{
+    //    Sprite s = System.Array.Find(sprites, x => x.name == spriteName);
+    //    spriteRenderer.sprite = s;
+    //}
+
     public void SetName(string value) { name = value; }
     public void SetSpecies (Species value) { species = value; }
     public void SetType(Type value) { type = value; }
     public void SetWeakTo(Type value) { weakTo = value; }
+    public void SetMaxHealth(int value) { maxHealth = value; }
     public void SetHealth(int value) { health = value; }
     public void SetAttack(int value) { attack = value; }
     public void SetDefense(int value) { defense = value; }
@@ -186,31 +198,36 @@ public class PastryPet : MonoBehaviour
         switch (species)
         {
             case Species.Cookiedile:
-                health = random.Next(60, 80);
+                maxHealth = random.Next(60, 80);
+                health = maxHealth;
                 attack = random.Next(65, 75);
                 defense = random.Next(50, 65);
                 speed = random.Next(40, 45);
                 return;
             case Species.Bonbonny:
-                health = random.Next(45, 65);
+                maxHealth = random.Next(45, 65);
+                health = maxHealth;
                 attack = random.Next(50, 60);
                 defense = random.Next(45, 60);
                 speed = random.Next(60, 65);
                 return;
             case Species.Puppuff:
-                health = random.Next(55, 75);
+                maxHealth = random.Next(55, 75);
+                health = maxHealth;
                 attack = random.Next(60, 70);
                 defense = random.Next(55, 70);
                 speed = random.Next(55, 60);
                 return;
             case Species.Cupcat:
-                health = random.Next(50, 70);
+                maxHealth = random.Next(50, 70);
+                health = maxHealth;
                 attack = random.Next(55, 65);
                 defense = random.Next(60, 75);
                 speed = random.Next(50, 55);
                 return;
             case Species.Moofin:
-                health = random.Next(80, 100);
+                maxHealth = random.Next(80, 100);
+                health = maxHealth;
                 attack = random.Next(70, 80);
                 defense = random.Next(75, 90);
                 speed = random.Next(45, 50);

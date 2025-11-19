@@ -24,15 +24,8 @@ public class WhisperMicStream : MonoBehaviour
     private bool isRecording = false;
     private AudioClip micClip;
 
-    private GameObject teamObject;
-    private PastryPetTeam team;
-
     private void Awake()
     {
-        teamObject = new GameObject("PastryPetTeam");
-        team = teamObject.AddComponent<PastryPetTeam>();
-        team.LoadMembers();
-
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("No microphone devices found!");
@@ -114,7 +107,8 @@ public class WhisperMicStream : MonoBehaviour
                 StartCoroutine(battleManager.RunTurn());
                 return;
             case "switch":
-                team.SaveMembers();
+                battleManager.team.SaveMembers();
+                Debug.Log("Team Members Saved Successfully");
                 battleManager.SwitchMember();
                 StartCoroutine(battleManager.RunTurn());
                 return;
