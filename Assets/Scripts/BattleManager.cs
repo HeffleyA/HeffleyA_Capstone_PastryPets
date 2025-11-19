@@ -151,9 +151,20 @@ public class BattleManager : MonoBehaviour
         enemySlider.maxValue = enemyPet.GetHealth();
     }
 
-    public void Start()
+    public void SwitchMember()
     {
-
+        if (ownedPet == team.GetMember1)
+        {
+            ownedPet = team.GetMember2;
+        }
+        else if (ownedPet == team.GetMember2)
+        {
+            ownedPet = team.GetMember3;
+        }
+        else if (ownedPet == team.GetMember3)
+        {
+            ownedPet = team.GetMember1;
+        }
     }
 
     public void Update()
