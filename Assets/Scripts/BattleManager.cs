@@ -29,6 +29,10 @@ public class BattleManager : MonoBehaviour
     public AudioResource superBI;
     [SerializeField]
     public Sprite[] sprites;
+    [SerializeField]
+    public SpriteRenderer ownedRender;
+    [SerializeField]
+    public SpriteRenderer enemyRender;
 
     public GameObject teamObject;
     public PastryPetTeam team;
@@ -148,16 +152,7 @@ public class BattleManager : MonoBehaviour
 
         enemyPet.AssignWeakTo();
         enemyPet.AssignBaseStats();
-        //string enemySpritePath = $"C:\\Users\\aheffley\\Neumont\\Fall 2025\\Quarter\\PRO390-Capstone\\Projects\\Capstone-PastryPets\\Assets\\Sprites\\PastryPets\\{enemyPet.GetSpecies()}\\{enemyPet.GetSpecies()}{enemyPet.GetType()}_1";
-        //Sprite enemySprite = Resources.Load<Sprite>(enemySpritePath);
-        //if (enemySprite != null )
-        //{
-        //    //enemyPet.SetSprite(enemySprite);
-        //}
-        //else
-        //{
-        //    Debug.LogWarning($"Sprite not found at path: {enemySpritePath}");
-        //}
+        SetSprite($"{enemyPet.GetSpecies()}{enemyPet.GetType()}_1", enemyPet, enemyRender);
 
         teamObject = new GameObject("PastryPetTeam");
         team = teamObject.AddComponent<PastryPetTeam>();
@@ -169,13 +164,41 @@ public class BattleManager : MonoBehaviour
         if (team.GetMember1 != null)
         {
             ownedPet = team.GetMember1;
-            //Sprite[] ownedSprites = Resources.LoadAll<Sprite>($"{ownedPet.GetSpecies()}{ownedPet.GetType()}");
-            //Sprite ownedTarget = System.Array.Find(ownedSprites, s => s.name == $"{ownedPet.GetSpecies()}{ownedPet.GetType()}_0");
-            //ownedPet.spriteRenderer.sprite = ownedTarget;
+            SetSprite($"{ownedPet.GetSpecies()}{ownedPet.GetType()}_0", ownedPet, ownedRender);
         }
 
         petSlider.maxValue = ownedPet.GetMaxHealth();
         enemySlider.maxValue = enemyPet.GetHealth();
+    }
+
+    private void SetSprite(string spriteName, PastryPet pet, SpriteRenderer renderer)
+    {
+        Sprite s = null;
+        Debug.Log(spriteName);
+
+        if (pet == ownedPet)
+        {
+           s = System.Array.Find(sprites, x => x.name == spriteName);
+        }
+        else if (pet == enemyPet)
+        {
+           s = System.Array.Find(sprites, x => x.name == spriteName);
+        }
+        else
+        {
+            Debug.Log("Pet not found!");
+        }
+
+        if (s == null)
+        {
+            Debug.LogError($"Sprite '{spriteName}' not found!");
+        }
+        else
+        {
+            Debug.Log($"Found sprite {s.name}");
+        }
+
+        renderer.sprite = s;
     }
 
     public void SwitchMember()
@@ -199,16 +222,7 @@ public class BattleManager : MonoBehaviour
             ownedPet = team.GetMember1;
         }
 
-        //string spritePath = $"C:\\Users\\aheffley\\Neumont\\Fall 2025\\Quarter\\PRO390-Capstone\\Projects\\Capstone-PastryPets\\Assets\\Sprites\\PastryPets\\{ownedPet.GetSpecies()}\\{ownedPet.GetSpecies()} {ownedPet.GetType()}_0";
-        //Sprite loadedSprite = Resources.Load<Sprite>(spritePath);
-        //if (loadedSprite != null)
-        //{
-        //    //ownedPet.SetSprite(loadedSprite);
-        //}
-        //else
-        //{
-        //    Debug.LogWarning($"Sprite not found at path: {spritePath}");
-        //}
+        SetSprite($"{ownedPet.GetSpecies()}{ownedPet.GetType()}_0", ownedPet, ownedRender);
     }
 
     public void Update()
