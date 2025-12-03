@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
-public class PastryPet : MonoBehaviour
+public class PastryPet
 {
     System.Random random = new System.Random();
 

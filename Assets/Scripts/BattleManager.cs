@@ -9,10 +9,6 @@ using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
-    //[SerializeField]
-    //public PastryPet enemyPet;
-    //[SerializeField]
-    //public PastryPet ownedPet;
     [SerializeField]
     public Slider petSlider;
     [SerializeField]
@@ -34,13 +30,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     public SpriteRenderer enemyRender;
 
-    public GameObject teamObject;
-    public PastryPetTeam team;
+    public PastryPetTeam team = new PastryPetTeam();
 
-    private GameObject ownedObject;
-    public PastryPet ownedPet;
-    private GameObject enemyObject;
-    private PastryPet enemyPet;
+    public PastryPet ownedPet = new PastryPet();
+    private PastryPet enemyPet = new PastryPet();
 
     public IEnumerator RunTurn()
     {
@@ -143,8 +136,6 @@ public class BattleManager : MonoBehaviour
     {
         music.Play();
 
-        enemyObject = new GameObject("PastryPet");
-        enemyPet = enemyObject.AddComponent<PastryPet>();
         enemyPet.SetName("Cookiedile");
         enemyPet.SetSpecies(PastryPet.Species.Cookiedile);
         enemyPet.SetType(PastryPet.Type.Pyro);
@@ -154,12 +145,8 @@ public class BattleManager : MonoBehaviour
         enemyPet.AssignBaseStats();
         SetSprite($"{enemyPet.GetSpecies()}{enemyPet.GetType()}_1", enemyPet, enemyRender);
 
-        teamObject = new GameObject("PastryPetTeam");
-        team = teamObject.AddComponent<PastryPetTeam>();
         team.LoadMembers();
 
-        ownedObject = new GameObject("PastryPet");
-        ownedPet = ownedObject.AddComponent<PastryPet>();
 
         if (team.GetMember1 != null)
         {

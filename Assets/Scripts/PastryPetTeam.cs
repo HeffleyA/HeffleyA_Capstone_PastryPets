@@ -1,12 +1,8 @@
 using System.IO;
 using UnityEngine;
 
-public class PastryPetTeam : MonoBehaviour
+public class PastryPetTeam
 {
-    private GameObject member1Object;
-    private GameObject member2Object;
-    private GameObject member3Object;
-
     private PastryPet member1;
     private PastryPet member2;
     private PastryPet member3;
@@ -15,21 +11,26 @@ public class PastryPetTeam : MonoBehaviour
     public PastryPet GetMember2 { get { return member2; } }
     public PastryPet GetMember3 { get { return member3; } }
 
-    public void SetMember1(PastryPet member) { member1 = member; }
-    public void SetMember2(PastryPet member) { member2 = member; }
-    public void SetMember3(PastryPet member) { member3 = member; }
-
-    private string filePath = "C:\\Users\\aheffley\\Neumont\\Fall 2025\\Quarter\\PRO390-Capstone\\Projects\\Capstone-PastryPets\\Assets\\SaveData\\SavaData.txt";
-
-    private void Awake()
-    {
-
+    public void SetMember1(PastryPet member) 
+    { 
+        member1 = new PastryPet();
+        member1 = member; 
     }
+    public void SetMember2(PastryPet member) 
+    { 
+        member2 = new PastryPet();
+        member2 = member; 
+    }
+    public void SetMember3(PastryPet member) 
+    { 
+        member3 = new PastryPet();
+        member3 = member; 
+    }
+
+    private string filePath = "Assets/SaveData/TeamData.txt";
 
     private string GetAllMembersInfo()
     {
-        Debug.Log("If you're seeing this, the GetAllMembersInfo method is being called");
-
         string baseInfo = "";
         string member1Info = "";
         string member2Info = "";
@@ -48,9 +49,7 @@ public class PastryPetTeam : MonoBehaviour
                 $"\n{member1.GetSpeed()}" +
                 $"\n{member1.GetLevel()}";
 
-            Debug.Log(member1Info);
             baseInfo = member1Info;
-            Debug.Log(baseInfo);
         }
 
         if (member2 != null)
@@ -66,9 +65,7 @@ public class PastryPetTeam : MonoBehaviour
                 $"\n{member2.GetSpeed()}" +
                 $"\n{member2.GetLevel()}";
 
-            Debug.Log(member2Info);
             baseInfo = member1Info + member2Info;
-            Debug.Log(baseInfo);
         }
 
         if (member3 != null)
@@ -84,37 +81,32 @@ public class PastryPetTeam : MonoBehaviour
                 $"\n{member3.GetSpeed()}" +
                 $"\n{member3.GetLevel()}";
 
-            Debug.Log(member3Info);
             baseInfo = member1Info + member2Info + member3Info;
         }
 
-        Debug.Log(baseInfo);
-        Debug.Log("If you're seeing this, the GetAllMembersInfo method has finished running");
         return baseInfo;
     }
 
     public void SaveMembers()
     {
-        Debug.Log("If you're seeing this, the SaveMembers method is being called");
-
         if (!File.Exists(filePath))
         {
             File.Create(filePath);
         }
 
         File.WriteAllText(filePath, GetAllMembersInfo());
-        Debug.Log("If you're seeing this, the SaveMembers method has finished running");
     }
 
     public void LoadMembers()
     {
-        Debug.Log("If you're seeing this, the LoadMembers method is being called");
+        if (!File.Exists(filePath))
+        {
+            File.Create(filePath);
+        }
 
         string[] lines = File.ReadAllLines(filePath);
         if (lines.Length >= 10)
         {
-            member1Object = new GameObject("PastryPet");
-            member1 = member1Object.AddComponent<PastryPet>();
             member1.SetName(lines[0]);
             member1.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[1]));
             member1.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[2]));
@@ -128,8 +120,6 @@ public class PastryPetTeam : MonoBehaviour
 
             if (lines.Length >= 20)
             {
-                member2Object = new GameObject("PastryPet");
-                member2 = member2Object.AddComponent<PastryPet>();
                 member2.SetName(lines[10]);
                 member2.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[11]));
                 member2.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[12]));
@@ -144,8 +134,6 @@ public class PastryPetTeam : MonoBehaviour
 
             if (lines.Length >= 30)
             {
-                member3Object = new GameObject("PastryPet");
-                member3 = member3Object.AddComponent<PastryPet>();
                 member3.SetName(lines[20]);
                 member3.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[21]));
                 member3.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[22]));

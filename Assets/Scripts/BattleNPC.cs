@@ -10,14 +10,10 @@ public class BattleNPC : MonoBehaviour
 
     private PlayerControls controls;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
         controls = new PlayerControls();
         controls.Player.Enable();
-
-        Debug.Log(transform.position.x);
-        Debug.Log(player.transform.position.x);
     }
 
     // Update is called once per frame
