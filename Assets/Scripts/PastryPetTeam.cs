@@ -107,6 +107,7 @@ public class PastryPetTeam
         string[] lines = File.ReadAllLines(filePath);
         if (lines.Length >= 10)
         {
+            member1 = new PastryPet();
             member1.SetName(lines[0]);
             member1.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[1]));
             member1.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[2]));
@@ -120,6 +121,7 @@ public class PastryPetTeam
 
             if (lines.Length >= 20)
             {
+                member2 = new PastryPet();
                 member2.SetName(lines[10]);
                 member2.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[11]));
                 member2.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[12]));
@@ -134,6 +136,7 @@ public class PastryPetTeam
 
             if (lines.Length >= 30)
             {
+                member3 = new PastryPet();
                 member3.SetName(lines[20]);
                 member3.SetSpecies((PastryPet.Species)System.Enum.Parse(typeof(PastryPet.Species), lines[21]));
                 member3.SetType((PastryPet.Type)System.Enum.Parse(typeof(PastryPet.Type), lines[22]));

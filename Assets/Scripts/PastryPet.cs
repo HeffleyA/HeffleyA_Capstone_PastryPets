@@ -42,8 +42,9 @@ public class PastryPet
     private int speed;
     private int level;
 
-    private float exp;
-    private float expToLvl;
+    private int exp;
+    private int expToLvl;
+    private bool knockedOut;
     public int damageToTake = 0;
 
     public Sprite[] sprites;
@@ -67,12 +68,10 @@ public class PastryPet
     public int GetDefense() { return defense; }
     public int GetSpeed() { return speed; }
     public int GetLevel() { return level; }
-
-    //public void SetSprite(string spriteName)
-    //{
-    //    Sprite s = System.Array.Find(sprites, x => x.name == spriteName);
-    //    spriteRenderer.sprite = s;
-    //}
+    public int GetExp() { return exp; }
+    public int GetExpToLevel() { return expToLvl; }
+    public bool GetKnockedOut() { return knockedOut; }
+    
 
     public void SetName(string value) { name = value; }
     public void SetSpecies (Species value) { species = value; }
@@ -84,8 +83,11 @@ public class PastryPet
     public void SetDefense(int value) { defense = value; }
     public void SetSpeed(int value) { speed = value; }
     public void SetLevel(int value) { level = value; }
+    public void SetExp(int value) { exp = value; }
+    public void SetExpToLevel(int value) { expToLvl = value; }
+    public void SetKnockedOut(bool value) { knockedOut = value; }
 
-    void OnLevelUp()
+    public void OnLevelUp(int remainingExp)
     {
         level++;
 
@@ -94,20 +96,8 @@ public class PastryPet
         defense = (int)(defense + ((defense * 0.1)) / 2);
         speed = (int)(speed + ((speed * 0.1)) / 2);
 
+        exp = remainingExp;
         expToLvl = level * random.Next(3, 5);
-    }
-
-    public void OnGainExp(PastryPet opp)
-    {
-        exp += (float)(opp.GetLevel() * 2);
-
-        float remainingExp = expToLvl - exp;
-
-        if (remainingExp <= 0)
-        {
-            OnLevelUp();
-            exp = remainingExp * -1;
-        }
     }
 
     public void OnGetAttacked(PastryPet opp)
@@ -195,6 +185,9 @@ public class PastryPet
 
     public void AssignBaseStats()
     {
+        SetExpToLevel(10);
+        SetExp(0);
+
         switch (species)
         {
             case Species.Cookiedile:

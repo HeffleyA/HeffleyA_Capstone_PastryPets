@@ -88,6 +88,8 @@ public class BakingNPC : MonoBehaviour
     private void OnNoButtonClick()
     {
         firstPanel.SetActive(false);
+
+        controls.Player.Disable();
     }
 
     private void OnContinueButtonClick()
@@ -171,5 +173,6 @@ public class BakingNPC : MonoBehaviour
     private void OnFinishButtonClick()
     {
         fourthPanel.SetActive(false);
+        controls.Player.Disable();
     }
 }
