@@ -17,8 +17,6 @@ public class Inventory
         }
 
         string[] lines = File.ReadAllLines(filePath);
-        Debug.Log(items.Length);
-        Debug.Log(lines.Length);
 
         for (int i = 0; i < lines.Length - 1; i++)
         {

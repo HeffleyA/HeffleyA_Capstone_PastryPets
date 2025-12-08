@@ -106,13 +106,15 @@ public class PastryPet
 
         if (opp.type == this.weakTo)
         {
-            damageToTake *= (int)1.5;
+            int damageMod = damageToTake / 2;
+            damageToTake += damageMod;
             opp.hitSuperEffective = true;
         }
 
         if (random.Next(16) == 5)
         {
-            damageToTake *= (int)1.5;
+            int damageMod = damageToTake / 2;
+            damageToTake += damageMod;
             opp.hitCritical = true;
         }
         

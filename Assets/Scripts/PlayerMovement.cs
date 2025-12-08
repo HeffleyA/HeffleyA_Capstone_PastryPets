@@ -26,6 +26,11 @@ public class PlayerMovement : MonoBehaviour
         controls.Player.Disable();
     }
 
+    private void OnDestroy()
+    {
+        controls.Player.Disable();
+    }
+
     private void FixedUpdate()
     {
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
