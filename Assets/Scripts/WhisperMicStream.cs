@@ -10,6 +10,8 @@ public class WhisperMicStream : MonoBehaviour
 {
     [SerializeField]
     public BattleManager battleManager;
+    [SerializeField]
+    public GameObject whisperPanel;
 
     System.Random random = new System.Random();
 
@@ -26,6 +28,8 @@ public class WhisperMicStream : MonoBehaviour
 
     private void Awake()
     {
+        whisperPanel.SetActive(true);
+
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("No microphone devices found!");
@@ -47,6 +51,8 @@ public class WhisperMicStream : MonoBehaviour
 
     IEnumerator RecordAndTranscribe()
     {
+        whisperPanel.SetActive(false);
+
         isRecording = true;
         Debug.Log("Starting 2-second recording...");
 
@@ -97,26 +103,29 @@ public class WhisperMicStream : MonoBehaviour
             case "attack":
                 battleManager.ownedPet.isAttacking = true;
                 StartCoroutine(battleManager.RunTurn());
+                whisperPanel.SetActive(true);
                 return;
             case "defend":
                 battleManager.ownedPet.isDefending = true;
                 StartCoroutine(battleManager.RunTurn());
+                whisperPanel.SetActive(true);
                 return;
             case "dodge":
                 battleManager.ownedPet.isDodging = true;
                 StartCoroutine(battleManager.RunTurn());
+                whisperPanel.SetActive(true);
                 return;
             case "switch":
                 battleManager.team.SaveMembers();
                 Debug.Log("Team Members Saved Successfully");
                 battleManager.SwitchMember();
                 StartCoroutine(battleManager.RunTurn());
+                whisperPanel.SetActive(true);
                 return;
             default:
+                whisperPanel.SetActive(true);
                 return;
         }
-
-
     }
 
 }

@@ -15,7 +15,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     public Slider enemySlider;
     [SerializeField]
-    public TextMeshPro battleText;
+    public GameObject battlePanel;
+    [SerializeField]
+    public TextMeshProUGUI battleText;
     [SerializeField]
     public AudioSource battleImpact;
     [SerializeField]
@@ -147,6 +149,7 @@ public class BattleManager : MonoBehaviour
                 enemyPet.OnGetAttacked(ownedPet);
                 if (CheckSuperEffective(ownedPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(ownedPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{enemyPet.GetName()} took {enemyPet.damageToTake} damage!";
                 CheckForKnockouts();
 
@@ -155,14 +158,20 @@ public class BattleManager : MonoBehaviour
                 ownedPet.OnGetAttacked(enemyPet);
                 if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
                 CheckForKnockouts();
+
+                yield return new WaitForSeconds(2f);
+
+                battlePanel.SetActive(false);
             }
             else
             {
                 ownedPet.OnGetAttacked(enemyPet);
                 if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
                 CheckForKnockouts();
 
@@ -171,8 +180,13 @@ public class BattleManager : MonoBehaviour
                 enemyPet.OnGetAttacked(ownedPet);
                 if (CheckSuperEffective(ownedPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(ownedPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{enemyPet.GetName()} took {enemyPet.damageToTake} damage!";
                 CheckForKnockouts();
+
+                yield return new WaitForSeconds(2f);
+
+                battlePanel.SetActive(false);
             }
 
             ownedPet.isAttacking = false;
@@ -185,6 +199,7 @@ public class BattleManager : MonoBehaviour
 
             if (ownedPet.hasDodged)
             {
+                battlePanel.SetActive(true);
                 battleText.text = $"{ownedPet.GetName()} has successfully dodged the attack!";
                 ownedPet.hasDodged = false;
             }
@@ -192,6 +207,7 @@ public class BattleManager : MonoBehaviour
             {
                 if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{ownedPet.GetName()} failed to dodge the attack and took {ownedPet.damageToTake} damage!";
             }
 
@@ -199,10 +215,14 @@ public class BattleManager : MonoBehaviour
             {
                 if (CheckSuperEffective(enemyPet)) yield return new WaitForSeconds(2f);
                 if (CheckCriticalHit(enemyPet)) yield return new WaitForSeconds(2f);
+                battlePanel.SetActive(true);
                 battleText.text = $"{ownedPet.GetName()} took {ownedPet.damageToTake} damage!";
                 ownedPet.hasDefended = false;
             }
 
+            yield return new WaitForSeconds(2f);
+
+            battlePanel.SetActive(false);
         }
 
         ownedPet.damageToTake = 0;
@@ -298,7 +318,7 @@ public class BattleManager : MonoBehaviour
 
     private bool CheckSuperEffective(PastryPet pet)
     {
-        Debug.Log($"{pet.GetName()}.hitSuperEffective is {pet.hitSuperEffective}");
+        battlePanel.SetActive(true);
 
         if (pet.hitSuperEffective)
         {
@@ -316,6 +336,8 @@ public class BattleManager : MonoBehaviour
 
     private bool CheckCriticalHit(PastryPet pet)
     {
+        battlePanel.SetActive(true);
+
         if (pet.hitCritical)
         {
             battleText.text = $"{pet.GetName()} landed a critical hit!";
