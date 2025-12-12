@@ -16,6 +16,8 @@ public class BakingNPC : MonoBehaviour
     public GameObject thirdPanel;
     [SerializeField]
     public GameObject fourthPanel;
+    [SerializeField] 
+    public GameObject fifthPanel;
     [SerializeField]
     public Button yesButton;
     [SerializeField]
@@ -26,6 +28,8 @@ public class BakingNPC : MonoBehaviour
     public Button submitButton;
     [SerializeField]
     public Button finishButton;
+    [SerializeField] 
+    public Button okayButton;
     [SerializeField]
     public TMP_Dropdown coreDropdown;
     [SerializeField]
@@ -48,13 +52,12 @@ public class BakingNPC : MonoBehaviour
     {
         controls = new PlayerControls();
 
-        inventory.LoadItems();
-
         yesButton.onClick.AddListener(OnYesButtonClick);
         noButton.onClick.AddListener(OnNoButtonClick);
         continueButton.onClick.AddListener(OnContinueButtonClick);
         submitButton.onClick.AddListener(OnSubmitButtonClick);
         finishButton.onClick.AddListener(OnFinishButtonClick);
+        okayButton.onClick.AddListener(OnOkayButtonClick);
     }
 
     // Update is called once per frame
@@ -76,8 +79,27 @@ public class BakingNPC : MonoBehaviour
 
     private void OnInteract()
     {
+        bool validItem = true;
+
+        inventory.LoadItems();
+
         firstPanel.SetActive(true);
-        if (inventory.items[1].GetAmountOwned() <= 0)
+
+        foreach (var item in inventory.items)
+        {
+            Debug.Log($"{item.GetItemType().ToString()}: {item.GetAmountOwned()}");
+
+            if (item.GetItemType().ToString() == "Baking_Kit" && item.GetAmountOwned() <= 0)
+            {
+                validItem = false;
+            }
+        }
+
+        if (validItem)
+        {
+            yesButton.interactable = true;
+        }
+        else
         {
             yesButton.interactable = false;
         }
@@ -96,6 +118,8 @@ public class BakingNPC : MonoBehaviour
 
     private void OnContinueButtonClick()
     {
+        bool validItem = true;
+
         switch (coreDropdown.value)
         {
             case 0:
@@ -117,12 +141,35 @@ public class BakingNPC : MonoBehaviour
                 break;
         }
 
+        Debug.Log(coreUsed);
+
+        foreach (var item in inventory.items)
+        {
+            if (item.GetItemType().ToString() == coreUsed && item.GetAmountOwned() <= 0)
+            {
+                Debug.Log($"{item.GetItemType().ToString()} found with {item.GetAmountOwned()} left");
+                validItem = false;
+            }
+        }
+
+        Debug.Log($"validItem is {validItem}");
+
         secondPanel.SetActive(false);
-        thirdPanel.SetActive(true);
+
+        if (validItem)
+        {
+            thirdPanel.SetActive(true);
+        }
+        else
+        {
+            fifthPanel.SetActive(true);
+        }
     }
 
     private void OnSubmitButtonClick()
     {
+        bool validItem = true;
+
         switch (specialDropdown.value)
         {
             case 0:
@@ -159,21 +206,43 @@ public class BakingNPC : MonoBehaviour
                 break;
         }
 
-        pet = system.BakePastryPet(coreUsed, specialUsed);
-
-        finalText.text = $"Congrats!\n" +
-        $"You have created a {pet.GetType()} type {pet.GetSpecies()} with the following stats!\n" +
-        $"Health: {pet.GetMaxHealth()}\n" +
-        $"Attack: {pet.GetAttack()}\n" +
-        $"Defense: {pet.GetDefense()}\n" +
-        $"Speed: {pet.GetSpeed()}";
+        foreach (var item in inventory.items)
+        {
+            if (item.GetItemType().ToString() == specialUsed && item.GetAmountOwned() <= 0)
+            {
+                validItem = false;
+            }
+        }
 
         thirdPanel.SetActive(false);
-        fourthPanel.SetActive(true);
+
+        if (validItem)
+        {
+            pet = system.BakePastryPet(coreUsed, specialUsed);
+
+            finalText.text = $"Congrats!\n" +
+            $"You have created a {pet.GetType()} type {pet.GetSpecies()} with the following stats!\n" +
+            $"Health: {pet.GetMaxHealth()}\n" +
+            $"Attack: {pet.GetAttack()}\n" +
+            $"Defense: {pet.GetDefense()}\n" +
+            $"Speed: {pet.GetSpeed()}";
+
+            fourthPanel.SetActive(true);
+        }
+        else
+        {
+            fifthPanel.SetActive(true);
+        }
     }
 
     private void OnFinishButtonClick()
     {
+        inventory.LoadItems();
         fourthPanel.SetActive(false);
+    }
+
+    private void OnOkayButtonClick()
+    {
+        fifthPanel.SetActive(false);
     }
 }

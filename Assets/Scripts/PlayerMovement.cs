@@ -1,5 +1,4 @@
 using TMPro;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -70,6 +69,16 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             animator.SetBool("IsWalking", false);
+        }
+
+        if (controls.Player.OpenInventory.triggered)
+        {
+            DisplayInventory();
+        }
+
+        if (controls.Player.QuitGame.IsPressed())
+        {
+            Application.Quit();
         }
     }
 
@@ -189,11 +198,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (controls.Player.OpenInventory.IsPressed())
-        {
-            DisplayInventory();
-        }
-
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 }

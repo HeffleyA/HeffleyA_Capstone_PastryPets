@@ -28,7 +28,6 @@ public class ShopNPC : MonoBehaviour
         controls = new PlayerControls();
 
         inventory = new Inventory();
-        inventory.LoadItems();
 
         submitButton.onClick.AddListener(OnSubmitButtonClicked);
         cancelButton.onClick.AddListener(OnCancelButtonClicked);
@@ -52,6 +51,7 @@ public class ShopNPC : MonoBehaviour
 
     private void OnInteract()
     {
+        inventory.LoadItems();
         shopPanel.SetActive(true);
     }
 

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Timers;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
@@ -42,9 +41,14 @@ public class BattleManager : MonoBehaviour
 
     private Inventory inventory = new Inventory();
 
+    private PlayerControls controls;
+
     private void Awake()
     {
         music.Play();
+
+        controls = new PlayerControls();
+        controls.Enable();
 
         inventory.LoadItems();
 
@@ -274,6 +278,8 @@ public class BattleManager : MonoBehaviour
 
             team.SaveMembers();
 
+            controls.Disable();
+
             SceneManager.LoadScene("SampleScene");
         }
 
@@ -311,6 +317,8 @@ public class BattleManager : MonoBehaviour
             }
 
             team.SaveMembers();
+
+            controls.Disable();
 
             SceneManager.LoadScene("SampleScene");
         }
@@ -408,5 +416,10 @@ public class BattleManager : MonoBehaviour
         int damageTaken = ownedPet.GetMaxHealth() - ownedPet.GetHealth();
         petSlider.value = ownedPet.GetMaxHealth() - damageTaken;
         enemySlider.value = enemyPet.GetHealth();
+
+        if (controls.Player.QuitGame.IsPressed())
+        {
+            Application.Quit();
+        }
     }
 }

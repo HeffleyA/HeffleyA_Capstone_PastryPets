@@ -1,6 +1,7 @@
 using System.IO;
 using UnityEngine;
 
+
 public class PastryPetTeam
 {
     private PastryPet member1;
@@ -27,7 +28,7 @@ public class PastryPetTeam
         member3 = member; 
     }
 
-    private string filePath = "Assets/SaveData/TeamData.txt";
+    private string filePath;
 
     private string GetAllMembersInfo()
     {
@@ -89,19 +90,24 @@ public class PastryPetTeam
 
     public void SaveMembers()
     {
+        filePath = Path.Combine(Application.persistentDataPath, "TeamData.txt");
+
         if (!File.Exists(filePath))
         {
-            File.Create(filePath);
+            File.WriteAllText(filePath, ""); // Initialize empty file safely
         }
 
         File.WriteAllText(filePath, GetAllMembersInfo());
+        Debug.Log("Saved team members to: " + filePath);
     }
 
     public void LoadMembers()
     {
+        filePath = Path.Combine(Application.persistentDataPath, "TeamData.txt");
+
         if (!File.Exists(filePath))
         {
-            File.Create(filePath);
+            File.WriteAllText(filePath, ""); // Initialize empty file safely
         }
 
         string[] lines = File.ReadAllLines(filePath);
