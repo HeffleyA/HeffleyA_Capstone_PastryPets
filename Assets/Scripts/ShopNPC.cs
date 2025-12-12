@@ -26,7 +26,6 @@ public class ShopNPC : MonoBehaviour
     private void Awake()
     {
         controls = new PlayerControls();
-        controls.Player.Enable();
 
         inventory = new Inventory();
         inventory.LoadItems();
@@ -37,13 +36,18 @@ public class ShopNPC : MonoBehaviour
 
     private void Update()
     {
-        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.05f)
+        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.65f)
         {
+            controls.Player.Enable();
             if (controls.Player.Interact.IsPressed())
             {
                 OnInteract();
             }
         }
+        else
+        {
+            controls.Player.Disable();
+        }    
     }
 
     private void OnInteract()

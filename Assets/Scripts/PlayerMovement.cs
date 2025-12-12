@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (controls.Player.Move.triggered)
+        if (controls.Player.Move.IsInProgress())
         {
             animator.SetBool("IsWalking", true);
 
@@ -66,6 +66,10 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool("IsFacingUp", false);
                 animator.SetBool("IsFacingSide", false);
             }
+        }
+        else
+        {
+            animator.SetBool("IsWalking", false);
         }
     }
 

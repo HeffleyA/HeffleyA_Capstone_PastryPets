@@ -35,7 +35,7 @@ public class BattleNPC : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.05f)
+        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.65f)
         {
             if (controls.Player.Interact.IsPressed())
             {

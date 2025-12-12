@@ -47,7 +47,6 @@ public class BakingNPC : MonoBehaviour
     private void Awake()
     {
         controls = new PlayerControls();
-        controls.Player.Enable();
 
         inventory.LoadItems();
 
@@ -61,12 +60,17 @@ public class BakingNPC : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.05f)
+        if (Math.Abs(this.transform.position.x - player.transform.position.x) <= 0.65f)
         {
+            controls.Player.Enable();
             if (controls.Player.Interact.IsPressed())
             {
                 OnInteract();
             }
+        }
+        else
+        {
+            controls.Player.Disable();
         }
     }
 
@@ -88,8 +92,6 @@ public class BakingNPC : MonoBehaviour
     private void OnNoButtonClick()
     {
         firstPanel.SetActive(false);
-
-        controls.Player.Disable();
     }
 
     private void OnContinueButtonClick()
@@ -173,6 +175,5 @@ public class BakingNPC : MonoBehaviour
     private void OnFinishButtonClick()
     {
         fourthPanel.SetActive(false);
-        controls.Player.Disable();
     }
 }
